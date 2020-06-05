@@ -1,0 +1,6 @@
+framework module MarvelApiWrapper {
+  umbrella header "MarvelApiWrapper-umbrella.h"
+
+  export *
+  module * { export * }
+}
