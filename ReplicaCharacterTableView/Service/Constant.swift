@@ -22,4 +22,12 @@ struct Constant {
         case CreatorDetail
         case ViewAll
     }
+	
+	// ** Key strings used in CharacterDetailsViewController ** //
+	let kCharacterDetailsSectionTitles: [String] = ["Image", "Description", " Comics", " Series", " Stories", " Events"]
+	let kNoCharacterDescription: String = "Description Not Available"
+	let kNoCharacterComics: String = "No Comics Available"
+	let kNoCharacterSeries: String = "No Series Available"
+	let kNoCharacterStories: String = "No Stories Available"
+	let kNoCharacterEvents: String = "No Events Available"
 }

@@ -128,6 +128,103 @@ class Model {
     }
 	
 	
+	func getComicBy(id: Int) -> Comic? {
+        return realm?.object(ofType: Comic.self, forPrimaryKey: id)
+    }
+	
+
+	func getComicsWith(characterId: Int) -> [Comic] {
+        var comics = [Comic]()
+        let ids = realm?.object(ofType: Character.self, forPrimaryKey: characterId)?.comics ?? List<Int>()
+        
+        for id in ids {
+           
+			if let comic = getComicBy(id: id) {
+                comics.append(comic)
+            }
+        }
+		
+        return comics
+    }
+	
+	
+	func save(_ comics: [Comic]) {
+        do {
+            try realm?.write {
+                realm?.add(comics)
+            }
+        } catch let error {
+            debugPrint("\(error) saving comics")
+        }
+    }
+	
+	
+	func save(comicId: Int, toCharacter id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Character.self, forPrimaryKey: id)?.comics.append(comicId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving comic ids")
+        }
+    }
+	
+	
+	func save(comicId: Int, toEvent id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Event.self, forPrimaryKey: id)?.comics.append(comicId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving comic ids")
+        }
+    }
+	
+	
+	func save(comicId: Int, toSerie id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Serie.self, forPrimaryKey: id)?.comics.append(comicId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving comic id")
+        }
+    }
+	
+	
+	func save(imageData: Data?, toComic id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Comic.self, forPrimaryKey: id)?.imageData = imageData
+            }
+        } catch let error {
+            debugPrint("\(error) saving image to comic")
+        }
+    }
+	
+	
+	func save(comicId: Int, toCreator id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Creator.self, forPrimaryKey: id)?.comics.append(comicId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving story id")
+        }
+    }
+	
+	
+	func save(comicId: Int, toStory id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Story.self, forPrimaryKey: id)?.comics.append(comicId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving comic id")
+        }
+    }
+	
+	
 	func save(creatorId: Int, toComic id: Int) {
         do {
             try realm?.write {
@@ -144,6 +241,12 @@ class Model {
         return realm?.object(ofType: Serie.self, forPrimaryKey: id) != nil
     }
 
+	
+	func getSerieBy(id: Int) -> Serie? {
+        return realm?.object(ofType: Serie.self, forPrimaryKey: id)
+    }
+	
+	
 	func save(creatorId: Int, toSerie id: Int) {
         do {
             try realm?.write {
@@ -155,10 +258,106 @@ class Model {
     }
 	
 	
+	func getSeriesWith(characterId: Int) -> [Serie] {
+        var series = [Serie]()
+        let ids = realm?.object(ofType: Character.self, forPrimaryKey: characterId)?.series ?? List<Int>()
+
+        for id in ids {
+            if let serie = getSerieBy(id: id) {
+                series.append(serie)
+            }
+        }
+        return series
+    }
+	
+	
+	func save(_ series: [Serie]) {
+        do {
+            try realm?.write {
+                realm?.add(series)
+            }
+        } catch let error {
+            debugPrint("\(error) saving series")
+        }
+    }
+	
+	func save(serieId: Int, toCharacter id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Character.self, forPrimaryKey: id)?.series.append(serieId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving series ids")
+        }
+    }
+	
+	func save(serieId: Int, toEvent id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Event.self, forPrimaryKey: id)?.series.append(serieId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving series ids")
+        }
+    }
+	
+	
+	func save(serieId: Int, toStory id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Story.self, forPrimaryKey: id)?.series.append(serieId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving serie id")
+        }
+    }
+	
+	
+	func save(serieId: Int, toCreator id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Creator.self, forPrimaryKey: id)?.series.append(serieId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving serie id")
+        }
+    }
+	
+	
+	func save(imageData: Data?, toSerie id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Serie.self, forPrimaryKey: id)?.imageData = imageData
+            }
+        } catch let error {
+            debugPrint("\(error) saving image to serie")
+        }
+    }
+	
+	
 	// MARK: Get Story
     func doesStoryExist(with id: Int) -> Bool {
         return realm?.object(ofType: Story.self, forPrimaryKey: id) != nil
     }
+	
+	
+	func getStoryBy(id: Int) -> Story? {
+		   return realm?.object(ofType: Story.self, forPrimaryKey: id)
+	   }
+	
+	
+	func getStoriesWith(characterId: Int) -> [Story] {
+        var stories = [Story]()
+        let ids = realm?.object(ofType: Character.self, forPrimaryKey: characterId)?.stories ?? List<Int>()
+        
+        for id in ids {
+            if let story = getStoryBy(id: id) {
+                stories.append(story)
+            }
+        }
+        return stories
+    }
+	
 
     func save(creatorId: Int, toStory id: Int) {
         do {
@@ -171,9 +370,149 @@ class Model {
     }
 	
 	
+	func save(_ story: Story) {
+        do {
+            try realm?.write {
+                realm?.add(story)
+            }
+        } catch let error {
+            debugPrint("\(error) saving story")
+        }
+    }
+	
+	
+	func save(storyId: Int, toComic id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Comic.self, forPrimaryKey: id)?.stories.append(storyId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving story id")
+        }
+    }
+	
+	
+	func save(storyId: Int, toCharacter id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Character.self, forPrimaryKey: id)?.stories.append(storyId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving story ids")
+        }
+    }
+	
+	
+	func save(storyId: Int, toEvent id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Event.self, forPrimaryKey: id)?.stories.append(storyId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving story id")
+        }
+    }
+	
+	
+	func save(storyId: Int, toSerie id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Serie.self, forPrimaryKey: id)?.stories.append(storyId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving story id")
+        }
+    }
+	
+	
+	func save(storyId: Int, toCreator id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Creator.self, forPrimaryKey: id)?.stories.append(storyId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving story id")
+        }
+    }
+	
+	
 	// MARK: Get Event
+	func getEventBy(id: Int) -> Event? {
+        return realm?.object(ofType: Event.self, forPrimaryKey: id)
+    }
+	
+	
+	func getEventsWith(characterId: Int) -> [Event] {
+        var events = [Event]()
+        let ids = realm?.object(ofType: Character.self, forPrimaryKey: characterId)?.events ?? List<Int>()
+        
+        for id in ids {
+        
+			if let event = getEventBy(id: id) {
+                events.append(event)
+            }
+        }
+    
+		return events
+    }
+	
+	
     func doesEventExist(with id: Int) -> Bool {
         return realm?.object(ofType: Event.self, forPrimaryKey: id) != nil
+    }
+	
+	
+	func save(_ events: [Event]) {
+        do {
+            try realm?.write {
+                realm?.add(events)
+            }
+        } catch let error {
+            debugPrint("\(error) saving character")
+        }
+    }
+	
+	func save(eventId: Int, toCharacter id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Character.self, forPrimaryKey: id)?.events.append(eventId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving events ids")
+        }
+    }
+	
+	
+	func save(eventId: Int, toComic id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Comic.self, forPrimaryKey: id)?.events.append(eventId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving event id")
+        }
+    }
+	
+	
+	func save(eventId: Int, toSerie id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Serie.self, forPrimaryKey: id)?.events.append(eventId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving event id")
+        }
+    }
+	
+	
+	func save(eventId: Int, toStory id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Story.self, forPrimaryKey: id)?.events.append(eventId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving comic id")
+        }
     }
 	
 	
@@ -187,6 +526,29 @@ class Model {
         }
     }
 	
+	
+	func save(imageData: Data?, toEvent id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Event.self, forPrimaryKey: id)?.imageData = imageData
+            }
+        } catch let error {
+            debugPrint("\(error) saving image to event")
+        }
+    }
+	
+	
+	func save(eventId: Int, toCreator id: Int) {
+        do {
+            try realm?.write {
+                realm?.object(ofType: Creator.self, forPrimaryKey: id)?.events.append(eventId)
+            }
+        } catch let error {
+            debugPrint("\(error) saving event id")
+        }
+    }
+	
+
 	// MARK: Creators
     func doesCreatorExist(with id: Int) -> Bool {
         return realm?.object(ofType: Creator.self, forPrimaryKey: id) != nil

@@ -83,7 +83,7 @@ extension CharacterViewController: CharactersDisplayLogic  {
         cell.textLabel?.text = character.name
         cell.detailTextLabel?.text = character.desc
         cell.accessibilityIdentifier = String(character.id)
-        cell.detailTextLabel?.numberOfLines = 4 // 4
+        cell.detailTextLabel?.numberOfLines = 0 // 4
         cell.imageView?.image = UIImage(data: character.imageData ?? Data())
 
         return cell
@@ -100,20 +100,28 @@ extension CharacterViewController: CharactersDisplayLogic  {
 		let contentYoffset = scrollView.contentOffset.y
 		let distanceFromBottom = scrollView.contentSize.height - contentYoffset
 		
-		if distanceFromBottom < height && !self.loadingIndicator.isAnimating {
+		if distanceFromBottom < height && !self.loadingIndicator.isAnimating && tableView.numberOfSections != 0 {
 			getCharacters()
 		}
 	}
 	
 	
-	/*override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let selectedRow = tableView.cellForRow(at: indexPath) else {
-            return
+	// MARK: - Routing
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let destinationVC = segue.destination as? CharacterDetailViewController, let id = sender as? Int {
+            destinationVC.characterId = id
         }
-        let characterId = Int(selectedRow.accessibilityIdentifier!)
+    }
 
-        performSegue(withIdentifier: Constant.Segue.CharacterDetail.rawValue, sender: characterId)
-    }*/
+	
+//	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        guard let selectedRow = tableView.cellForRow(at: indexPath) else {
+//            return
+//        }
+//        let characterId = Int(selectedRow.accessibilityIdentifier!)
+//
+//        performSegue(withIdentifier: Constant.Segue.CharacterDetail.rawValue, sender: characterId)
+//    }
 	
 	
 	// MARK: - We start to get the characters from the API
@@ -126,14 +134,6 @@ extension CharacterViewController: CharactersDisplayLogic  {
         loadingIndicator.startAnimating()
         interactor?.getCharacters()
     }
-	
-	
-	// MARK: - Routing
-	   /*override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-		   if let destinationVC = segue.destination as? CharacterDetailViewController, let id = sender as? Int {
-			   destinationVC.characterId = id
-		   }
-	   }*/
 	
 	
 	// MARK: - Protocol methods
