@@ -2,8 +2,8 @@
 //  SceneDelegate.swift
 //  ReplicaCharacterTableView
 //
-//  Created by Jorge Fuentes Casillas on 03/06/20.
-//  Copyright © 2020 Jorge Fuentes Casillas. All rights reserved.
+//  Created by JFC on 03/06/20.
+//  Copyright © 2020 JFC. All rights reserved.
 //
 
 import UIKit

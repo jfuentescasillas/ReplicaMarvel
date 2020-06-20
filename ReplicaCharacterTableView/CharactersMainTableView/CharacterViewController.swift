@@ -2,8 +2,8 @@
 //  ViewController.swift
 //  ReplicaCharacterTableView
 //
-//  Created by Jorge Fuentes Casillas on 03/06/20.
-//  Copyright © 2020 Jorge Fuentes Casillas. All rights reserved.
+//  Created by JFC on 03/06/20.
+//  Copyright © 2020 JFC. All rights reserved.
 //
 
 import UIKit
@@ -17,12 +17,14 @@ protocol CharactersDisplayLogic: class {
 }
 
 
-class CharacterViewController: UITableViewController {
+class CharacterViewController: UITableViewController, UISearchBarDelegate {
 	// MARK: Constants and variables
 	var interactor: CharactersBusinessLogic?
+	var searchPerformed: Bool = false
 
 	// MARK: Elements in Storyboard
 	@IBOutlet var loadingIndicator: UIActivityIndicatorView!
+	@IBOutlet var searchCharacterSearchBar: UISearchBar!
 	
 	
 	// MARK: - View lifecycle
@@ -31,12 +33,17 @@ class CharacterViewController: UITableViewController {
 
 		setup()
         getCacheCharacters()
-        tableView.makeToast("Scroll down for more", point: tableView.center, title: nil, image: nil, completion: nil)
+		tableView.makeToast(Constant().kScrollDown, point: tableView.center, title: nil, image: nil, completion: nil)
 	}
 	
 	
 	private func setup() {
-		title = "Marvel Comics Characters"
+		hideKeyboardWhenTappedAround()
+		placeKeyboardUnderTableView()
+		
+		title = Constant().kMainTableViewTitle
+		
+		searchCharacterSearchBar.delegate = self
 		
         let viewController = self
         let interactor = CharactersInteractor()
@@ -86,6 +93,8 @@ extension CharacterViewController: CharactersDisplayLogic  {
         cell.detailTextLabel?.numberOfLines = 0 // 4
         cell.imageView?.image = UIImage(data: character.imageData ?? Data())
 
+		print("character.comics:", character.comics)
+		
         return cell
 	}
 	
@@ -106,22 +115,20 @@ extension CharacterViewController: CharactersDisplayLogic  {
 	}
 	
 	
-	// MARK: - Routing
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let destinationVC = segue.destination as? CharacterDetailViewController, let id = sender as? Int {
-            destinationVC.characterId = id
-        }
-    }
+	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let selectedRow = tableView.cellForRow(at: indexPath) else { return }
+        let characterId = Int(selectedRow.accessibilityIdentifier!)
+		guard let characterDetailViewController = storyboard?.instantiateViewController(identifier: "CharacterDetails") as? CharacterDetailViewController else { return }
+		navigationController?.pushViewController(characterDetailViewController, animated: true)
+		navigationController?.navigationBar.prefersLargeTitles = false
+		
+		guard let character = Model().getCharacterBy(id: characterId!) else { return }
 
-	
-//	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        guard let selectedRow = tableView.cellForRow(at: indexPath) else {
-//            return
-//        }
-//        let characterId = Int(selectedRow.accessibilityIdentifier!)
-//
-//        performSegue(withIdentifier: Constant.Segue.CharacterDetail.rawValue, sender: characterId)
-//    }
+		characterDetailViewController.title = character.name
+		characterDetailViewController.characterImageViewData = character.imageData
+		characterDetailViewController.characterDetailDescription = character.desc
+		characterDetailViewController.characterId = characterId!
+    }
 	
 	
 	// MARK: - We start to get the characters from the API
@@ -146,6 +153,7 @@ extension CharacterViewController: CharactersDisplayLogic  {
 		tableView.beginUpdates()
 		tableView.insertSections(IndexSet(integersIn: numberOfSections..<numberOfCharacters), with: .none)
 		tableView.endUpdates()
+		tableView.reloadData()
 	}
 		
 	func displayImage(viewModel: Characters.ViewModel) {
@@ -162,4 +170,59 @@ extension CharacterViewController: CharactersDisplayLogic  {
         loadingIndicator.stopAnimating()
         tableView.tableFooterView?.makeToast(message)
     }
+	
+	
+	//MARK:- Method to hide the keyboard (when typing for a Marvel character's name) when tapped outside of it.
+	func hideKeyboardWhenTappedAround() {
+		let tap: UITapGestureRecognizer = UITapGestureRecognizer(target:self, action:#selector(dismissKeyboard))
+		tap.cancelsTouchesInView = false
+		view.addGestureRecognizer(tap)
+	}
+	
+	@objc func dismissKeyboard() {
+		view.endEditing(true)
+	}
+	
+	
+	// MARK: Methods to scroll up the table view above the keyboard when the keyboard appears on screen
+	// Keyboard Delegates
+	// Show the keyboard under the table view
+	func placeKeyboardUnderTableView() {
+		navigationItem.rightBarButtonItem = nil
+		
+		// setup keyboard event
+		NotificationCenter.default.addObserver(
+			self,
+			selector: #selector(self.keyboardWillShow(notification:)),
+			name: UIResponder.keyboardDidShowNotification, object: nil)
+		NotificationCenter.default.addObserver(
+			self,
+			selector: #selector(self.keyboardWillHide(notification:)),
+			name: UIResponder.keyboardWillHideNotification, object: nil)
+	}
+	
+	
+	func textFieldShouldReturn(textField: UITextField) -> Bool {
+		textField.resignFirstResponder()
+		return true
+	}
+	
+	
+	@objc func keyboardWillShow(notification: NSNotification) {
+		navigationItem.rightBarButtonItem = nil
+		
+		let userInfo = notification.userInfo!
+		var keyboardFrame: CGRect = (userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
+		keyboardFrame = self.view.convert(keyboardFrame, from: nil)
+		
+		var contentInset: UIEdgeInsets = self.tableView.contentInset
+		contentInset.bottom = keyboardFrame.size.height
+		self.tableView.contentInset = contentInset
+	}
+	
+	
+	@objc func keyboardWillHide(notification: NSNotification) {
+		let contentInset:UIEdgeInsets = UIEdgeInsets.zero
+		self.tableView.contentInset = contentInset
+	}
 }

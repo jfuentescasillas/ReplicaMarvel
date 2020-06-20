@@ -1,18 +1,21 @@
 //
-//  CustomTableViewCell.swift
+//  CharacterImageSearchTableViewCell.swift
 //  ReplicaCharacterTableView
 //
-//  Created by JFC on 03/06/20.
+//  Created by JFC on 16/06/20.
 //  Copyright © 2020 JFC. All rights reserved.
 //
 
 import UIKit
 
-class CustomTableViewCell: UITableViewCell {
+class CharacterImageSearchTableViewCell: UITableViewCell {
 	var accessoryButton: UIButton?
+	@IBOutlet var characterSearchImageImageView: UIImageView!
+	@IBOutlet var characterSearchNameLabel: UILabel!
+	@IBOutlet var characterSearchDescriptionLabel: UILabel!
 	
 	
-	override func layoutSubviews() {
+    override func layoutSubviews() {
 		super.layoutSubviews()
 	
 		frame.origin.x = 10
@@ -37,10 +40,9 @@ class CustomTableViewCell: UITableViewCell {
         layer.shadowRadius = 10
         layer.shadowPath = shadowPath.cgPath
 		
-		textLabel?.frame.origin.y = (imageView?.frame.minY ?? 0) + 10
-        detailTextLabel?.frame.origin.y = (textLabel?.frame.maxY ?? 0) + 2
-        imageView?.frame.origin = .zero
-        imageView?.frame.size.height = bounds.height
+		characterSearchNameLabel?.frame.origin.y = (imageView?.frame.minY ?? 0) + 10
+        characterSearchImageImageView?.frame.origin = .zero
+        characterSearchImageImageView?.frame.size.height = bounds.height
         
         accessoryButton = subviews.compactMap { $0 as? UIButton }.first
         accessoryButton?.frame.origin.y = bounds.height - 20

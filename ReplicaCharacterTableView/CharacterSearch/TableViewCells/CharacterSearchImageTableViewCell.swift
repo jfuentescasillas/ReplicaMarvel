@@ -1,16 +1,17 @@
 //
-//  CharacterImageTableViewCell.swift
+//  CharacterSearchImageTableViewCell.swift
 //  ReplicaCharacterTableView
 //
-//  Created by JFC on 07/06/20.
+//  Created by JFC on 17/06/20.
 //  Copyright © 2020 JFC. All rights reserved.
 //
 
 import UIKit
 
-class CharacterImageTableViewCell: UITableViewCell {
-	@IBOutlet var characterImageView: UIImageView!
+class CharacterSearchImageTableViewCell: UITableViewCell {
+	@IBOutlet var characterSearchImageImageView: UIImageView!
 	
+		
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
